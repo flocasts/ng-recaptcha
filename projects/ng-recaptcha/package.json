@@ -1,14 +1,14 @@
 {
-  "name": "ng-recaptcha",
+  "name": "@flocasts/ng-recaptcha",
   "description": "Angular component for Google reCAPTCHA",
-  "version": "9.0.1",
-  "author": "Ruslan Arkhipau <dethariel@gmail.com>",
+  "version": "9.0.2",
+  "author": "Ruslan Arkhipau <dethariel@gmail.com>, Kaleb Fulgham <kaleb.fulgham@flosports.tv>",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/DethAriel/ng-recaptcha"
+    "url": "https://github.com/flocasts/ng-recaptcha"
   },
-  "homepage": "https://github.com/DethAriel/ng-recaptcha#readme",
+  "homepage": "https://github.com/flocasts/ng-recaptcha#readme",
   "keywords": [
     "angular",
     "recaptcha",

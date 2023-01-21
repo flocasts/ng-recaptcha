@@ -1,20 +1,9 @@
 import { isPlatformBrowser } from "@angular/common";
-import {
-  Inject,
-  Injectable,
-  NgZone,
-  Optional,
-  PLATFORM_ID,
-} from "@angular/core";
+import { Inject, Injectable, NgZone, Optional, PLATFORM_ID } from "@angular/core";
 import { Observable, Subject } from "rxjs";
 
 import { loader } from "./load-script";
-import {
-  RECAPTCHA_BASE_URL,
-  RECAPTCHA_LANGUAGE,
-  RECAPTCHA_NONCE,
-  RECAPTCHA_V3_SITE_KEY,
-} from "./tokens";
+import { RECAPTCHA_BASE_URL, RECAPTCHA_LANGUAGE, RECAPTCHA_NONCE, RECAPTCHA_V3_SITE_KEY } from "./tokens";
 
 export interface OnExecuteData {
   /**
@@ -142,10 +131,7 @@ export class ReCaptchaV3Service {
   }
 
   /** @internal */
-  private executeActionWithSubject(
-    action: string,
-    subject: Subject<string>
-  ): void {
+  private executeActionWithSubject(action: string, subject: Subject<string>): void {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const onError = (error: any) => {
       this.zone.run(() => {
@@ -160,17 +146,15 @@ export class ReCaptchaV3Service {
 
     this.zone.runOutsideAngular(() => {
       try {
-        this.grecaptcha
-          .execute(this.siteKey, { action })
-          .then((token: string) => {
-            this.zone.run(() => {
-              subject.next(token);
-              subject.complete();
-              if (this.onExecuteSubject) {
-                this.onExecuteSubject.next({ action, token });
-              }
-            });
-          }, onError);
+        this.grecaptcha.execute(this.siteKey, { action }).then((token: string) => {
+          this.zone.run(() => {
+            subject.next(token);
+            subject.complete();
+            if (this.onExecuteSubject) {
+              this.onExecuteSubject.next({ action, token });
+            }
+          });
+        }, onError);
       } catch (e) {
         onError(e);
       }
@@ -181,27 +165,19 @@ export class ReCaptchaV3Service {
   private init() {
     if (this.isBrowser) {
       if ("grecaptcha" in window) {
-        this.grecaptcha = grecaptcha;
+        this.grecaptcha = grecaptcha.enterprise || grecaptcha;
       } else {
         const langParam = this.language ? "&hl=" + this.language : "";
-        loader.loadScript(
-          this.siteKey,
-          this.onLoadComplete,
-          langParam,
-          this.baseUrl,
-          this.nonce
-        );
+        loader.loadScript(this.siteKey, this.onLoadComplete, langParam, this.baseUrl, this.nonce);
       }
     }
   }
 
   /** @internal */
-  private onLoadComplete = (grecaptcha: ReCaptchaV2.ReCaptcha) => {
-    this.grecaptcha = grecaptcha;
+  private onLoadComplete = (grecaptcha: ReCaptchaV2.ReCaptcha & { enterprise: ReCaptchaV2.ReCaptcha }) => {
+    this.grecaptcha = grecaptcha.enterprise || grecaptcha;
     if (this.actionBacklog && this.actionBacklog.length > 0) {
-      this.actionBacklog.forEach(([action, subject]) =>
-        this.executeActionWithSubject(action, subject)
-      );
+      this.actionBacklog.forEach(([action, subject]) => this.executeActionWithSubject(action, subject));
       this.actionBacklog = undefined;
     }
   };
